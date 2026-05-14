@@ -1,3 +1,4 @@
 db-data/
 src/logs/
 .idea/
+.egg_info
