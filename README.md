@@ -39,7 +39,7 @@ Feel free to adapt the `Makefile`, `Dockerfile` or any part of the code as you s
 - All the raw data tables are described in the `Raw Data Sources` section at the end of this file.
 - There can be a delay from when a bet is placed to when it is settled. For example, a user places a bet on football on 2024-01-01, but the game doesn't finish until 2024-01-02. The bet is settled on 2024-01-02.
 
-## Requirements
+#  Requirements
 
 ### Part 1: Data Ingestion
 
