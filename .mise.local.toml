@@ -1,0 +1,8 @@
+[tools]
+ python = "3.14" # [optional] will be used for the venv
+uv = 'latest'
+ [env]
+ PROJECT_NAME = "{{ config_root | basename }}"
+ _.python.venv = { path = "{{ config_root }}/.venv", create = true }
+PYTHONPATH = "{{ config_root }}"
+

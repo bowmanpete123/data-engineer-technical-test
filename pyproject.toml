@@ -1,0 +1,37 @@
+[project]
+name = "data-engineer-techincal-test"
+version = "0.1.0"
+description = "This is a data warehouse that will serve for Better Bets"
+authors = [
+    { name = "Peter Bowman", email = "peter.ralph.bowman@gmail.com" }
+]
+license = { text = "Proprietary" }
+requires-python = ">=3.14"
+dependencies = [
+    "dbt>=1.0.0.40.17",
+    "dbt-postgres>=1.10.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff",
+    "ty",
+    "debugpy",
+    "pytest",
+    "pytest-mock",
+    "pytest-cov",
+    "pyright",
+    "docformatter"
+]
+
+[tool.docformatter]
+line_length = 120
+pre_summary_newline = true
+post_summary_newline = true
+make_summary_multi_line = false
+force_wrap = false
+use_double_quotes = true
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
