@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, model_validator
 class BaseFileSource(ABC, BaseModel):
     model_config = ConfigDict(frozen=True)
     format: str
+    null_str: str | None = None
 
     @property
     @abstractmethod
@@ -39,6 +40,15 @@ class LocalFileSource(BaseFileSource):
 
     def validate_connection(self) -> None:
         p = self.path
+        # If the path contains glob characters, validate the parent directory
+        if any(char in str(p) for char in ["*", "?", "[", "]"]):
+            parent = p.parent
+            if not parent.exists():
+                raise ValueError(f"Directory missing for glob: {parent}")
+            if not parent.is_dir():
+                raise ValueError(f"Parent path for glob is not a directory: {parent}")
+            return
+
         if p.name.startswith("."):
             raise ValueError(f"Nope not going to load a hidden file: {p}")
         if not p.exists():
@@ -67,4 +77,26 @@ class S3FileSource(BaseFileSource):
     #         raise ValueError(f"S3 Source Error: {self.bucket}/{self.key} not found or inaccessible.") from e
 
 
-SOURCE_FILE_REGISTRY = {"local": LocalFileSource, "s3": S3FileSource}
+class LocalFolderSource(BaseFileSource):
+    path: Path
+
+    @property
+    def read_path(self) -> str:
+        """
+        Returns a glob pattern for all files of the specified format in the folder.
+        """
+        return str(self.path.resolve() / f"*.{self.format}")
+
+    def validate_connection(self) -> None:
+        p = self.path
+        if not p.exists():
+            raise ValueError(f"Directory missing: {p}")
+        if not p.is_dir():
+            raise ValueError(f"Path is not a directory: {p}")
+
+
+SOURCE_FILE_REGISTRY = {
+    "local": LocalFileSource,
+    "s3": S3FileSource,
+    "local_folder": LocalFolderSource,
+}

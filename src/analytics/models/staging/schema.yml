@@ -1,0 +1,98 @@
+version: 2
+
+models:
+  - name: stg_raw__users
+    description: "Staged user data with renamed columns and type standardisation."
+    columns:
+      - name: user_id
+        description: "Unique identifier for the user."
+        tests:
+          - unique
+          - not_null
+      - name: user_name
+        description: "Full name of the user."
+        tests:
+          - not_null
+      - name: is_test_user
+        description: "Flag indicating if the user is an internal test account."
+        tests:
+          - not_null
+      - name: currency_code
+        description: "The currency the user interacts in."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['GBP', 'EUR']
+      - name: created_at
+        description: "Timestamp of user account creation."
+        tests:
+          - not_null
+
+  - name: stg_raw__user_address
+    description: "Staged user address data."
+    columns:
+      - name: user_id
+        description: "Foreign key to users."
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_raw__users')
+                field: user_id
+      - name: country_code
+        description: "2-letter ISO country code."
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['GB', 'IE', 'IR']
+
+  - name: stg_raw__bet
+    description: "Staged betting transactions. Represents the raw grain of one row per bet."
+    columns:
+      - name: bet_id
+        description: "Unique identifier for the bet."
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        description: "Foreign key to users."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_raw__users')
+                field: user_id
+      - name: wager
+        description: "Amount of money wagered."
+        tests:
+          - not_null
+          - is_positive
+      - name: created_at
+        description: "When the bet was placed."
+        tests:
+          - not_null
+          - chronological_order:
+              arguments:
+                column_end: settled_at
+      - name: settled_at
+        description: "When the bet was resolved. Can be null if pending."
+
+  - name: stg_raw__fx_rates
+    description: "Daily exchange rates to USD."
+    columns:
+      - name: rate_date
+        tests:
+          - not_null
+      - name: currency_code
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['GBP', 'EUR']
+      - name: to_usd_rate
+        tests:
+          - not_null
+          - is_positive

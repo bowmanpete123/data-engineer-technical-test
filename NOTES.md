@@ -26,6 +26,15 @@ I've put the projects brief into gemini in order to have a conversation with the
 
 Here is the summary of our architectural deep dive, with the requested character replacements applied:
 
+### Mise.toml file
+
+I think that if I had time i'd add a mise.toml file to the container, simply because it can be the containers initialisation scripts and dependency installations all in one place, though I haven't used this before so its not been that big of a deal to me
+
+### ENV vars
+
+I'd have made a dotenv file i'd had more time too
+
+
 #### Summary of ETL Architecture Discussion
 
 The conversation focused on building a scalable, "mini-production" ETL framework using dbt, Postgres, and Python, specifically handling local CSV ingestion with an eye toward future cloud migration.
@@ -59,8 +68,21 @@ The Role of DuckDB: We identified DuckDB as an ideal "bridge" for the analytical
 > [!NOTE]
 > I think that I've over engineered this, I've tried to walk a fine line of building a solid extensible python base and wasting time not on implementation but I feel like this balance is out of whack. If I had all the time in the world I'd add a source and destination logic (i've added a todo for referecne)
 
+## Second AI Pass - Simply because it got really late
 
+[please see project_summary.md][projectsummaryLink]
+
+### If I had time
+
+- I'd have extended the ingestor process so that it would rebuild dbt everytime the raw tables are ingested - nvm I vibecoded it 
+- I'd have made an sql file ingestor in the main.py file that can update the dbt files in the folder (this would initially rely on docker-compose volumes) so any updates to the dbt models would refresh the workflow
+- I'd also make sure that adding other csv files bloody well worked for the uploading process!
+- Also the container is so brittle on the core service. Jesus! the ELer class needs to be able to gracefully handle its ingestors and observers (go level error handling I feel)
+- There should be a dim table for user updates, the currency may not be as connected to place as it used to, and the country of origin may not be the residing conutry? It could answer the following questions
+    - Is there a difference between the betting of those in UK vs. IE? Is this because of where they are?
+    - Are those living in IE more likely to bet more/less/same when they reach the UK?
 
 ---
 [pep621Link]: https://peps.python.org/pep-0621/
 [minimalFileWatcherLink]: https://medium.com/@efpa97_ltep_technologies/an-easy-filewatcher-for-python-no-side-effects-quick-setup-watchdog-alternative-c10e49c03071
+[projectsummaryLink]: ./gemini_conversations/PROJECT_SUMMARY_1.md

@@ -1,4 +1,86 @@
 version: 2
 
 models:
-  - name: dummy_model
+  - name: dim_users
+    description: "Conformed dimension of all non-test users with address information."
+    columns:
+      - name: user_id
+        tests:
+          - unique
+          - not_null
+      - name: country_code
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['GB', 'IE', 'IR']
+
+  - name: dim_games
+    description: "Conformed dimension of games and verticals."
+    columns:
+      - name: game_id
+        tests:
+          - unique
+          - not_null
+      - name: vertical
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['sports', 'casino', 'esports']
+
+  - name: dim_bet_outcomes
+    description: "Conformed dimension of bet outcomes, including a synthetic 'pending' status."
+    columns:
+      - name: bet_outcome_id
+        tests:
+          - unique
+          - not_null
+      - name: outcome
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['winner', 'loser', 'draw', 'pending']
+
+  - name: fct_bets
+    description: "Central transactional fact table for all wagers. Includes currency conversion to USD."
+    columns:
+      - name: bet_id
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_users')
+                field: user_id
+      - name: game_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_games')
+                field: game_id
+      - name: bet_outcome_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_bet_outcomes')
+                field: bet_outcome_id
+      - name: wager_usd
+        description: "Wager amount converted to USD based on the created_at exchange rate."
+        tests:
+          - not_null
+          - is_positive
+      - name: winnings_usd
+        description: "Winnings amount converted to USD based on the settled_at exchange rate. Null for pending bets."
+        tests:
+          - is_positive
+      - name: created_at
+        tests:
+          - not_null
+          - chronological_order:
+              arguments:
+                column_end: settled_at
+      - name: settled_at

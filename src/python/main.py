@@ -9,20 +9,21 @@ observer = os.getenv("ETL_WATCHER", "watchdog")
 dest = ElerConfig(
     "postgres",
     {
-        "HOST": os.getenv("PG_HOST", "localhost"),
-        "DATABASE": os.getenv("PG_DATABASE", "postgres"),
-        "USER": os.getenv("PG_USER", "admin"),
-        "PASSWORD": os.getenv("PG_PASSWORD", "secret"),
-        "PORT": int(os.getenv("PG_PORT", 5432)),  # Note the int conversion
-        "TABLE": os.getenv("PG_TABLE", "bets"),
-        "SCHEMA": os.getenv("PG_SCHEMA", "public"),
+        "host": os.getenv("PG_HOST", "localhost"),
+        "database": os.getenv("PG_DATABASE", "postgres"),
+        "user": os.getenv("PG_USER", "admin"),
+        "password": os.getenv("PG_PASSWORD", "secret"),
+        "port": int(os.getenv("PG_PORT", 5432)),  # Note the int conversion
+        "table": os.getenv("PG_TABLE", "bets"),
+        "schema_name": os.getenv("PG_SCHEMA", "public"),
     },
 )
 src = ElerConfig(
     "local",
     {
         "format": "csv",
-        "path": Path(os.getenv("LANDED_FILE_PATH", "../landed_files/bets.csv")),
+        "path": Path(os.getenv("LANDED_FOLDER", "../landed_files/*.csv")),
+        "null_str": os.getenv("NULL_STR", "NULL"),
     },
 )
 pipeline = ElerFactory(

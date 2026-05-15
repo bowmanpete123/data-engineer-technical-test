@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict
 class BaseSQLDestination(ABC, BaseModel):
     model_config = ConfigDict(frozen=True)
     table: str
-    schema: str
+    schema_name: str
 
     @property
     @abstractmethod
@@ -27,7 +27,7 @@ class BaseSQLDestination(ABC, BaseModel):
         The unified way to address the table inside DuckDB.
         Note: Some DBs like SQLite might override this if they don't use schemas.
         """
-        return f"remote_db.{self.schema}.{self.table}"
+        return f"remote_db.{self.schema_name}.{self.table}"
 
 
 class PostgresDestination(BaseSQLDestination):

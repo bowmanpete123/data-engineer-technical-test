@@ -21,7 +21,7 @@ def _parse_config(
     if isinstance(config, ElerConfig):
         return registry[config.type](**config.kwargs, **base_class_args)
     if isinstance(config, str):
-        return registry[config](base_class_args)
+        return registry[config](**base_class_args)
     # NOTE: This seems bloody pedantic but its making sure that somethign deosn't go wrong
     raise TypeError(
         f"The config you have parsed is of type: {type(config)}. Valid types are ElerConfig, and str"
